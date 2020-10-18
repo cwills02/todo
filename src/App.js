@@ -3,13 +3,16 @@ import Header from './Header/Header';
 import Auxillary from './components/Auxillary';
 import SecondList from './components/SecondList';
 import ThirdList from './components/ThirdList';
+import Photos from './components/photos';
+import axios from 'axios';
 
 class App extends React.Component {
   state = {
     inputValue: '',
     items: [],
     otherItems: [],
-    otherInputValue: ''
+    otherInputValue: '',
+    todos: []
   };
 
   onInputChange(e) {
@@ -70,6 +73,19 @@ class App extends React.Component {
     );
   }
 
+  componentDidMount() {
+    axios.get('http://jsonplaceholder.typicode.com/todos')
+      .then(res => {
+        const todos = res.data.slice(0, 10);
+        const updatedTodos = todos.map(todo => {
+          return {
+            ...todo
+          }
+        })
+        this.setState({todos: updatedTodos});
+      })
+  }
+
   newListItems() {
     let otherItems = this.state.otherItems;
     return (
@@ -106,6 +122,10 @@ class App extends React.Component {
           onClick={() => this.otherAddItem()}
           otherTask={this.newListItems()}
         />
+        <ul>
+          { this.state.todos.map(todo => <li key={todo.id}>{todo.title}</li>)}
+        </ul>
+        <Photos />
       </Auxillary>
     );
   }
